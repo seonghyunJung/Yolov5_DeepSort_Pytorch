@@ -214,10 +214,12 @@ def detect(opt):
                             # track line
                             cv2.line(im0, p0, p1, (255, 0, 255), 1)
 
+                            # Compare Current position and Previous position with Counting line
                             if(p0[1] > 200 and p1[1] < 200):
                                 people_counter_in += 1
                             elif(p1[1] > 200 and p0[1] < 200):
                                 people_counter_out += 1
+                            #####################################################################
 
                             """ # count if p0-p1 and line are intersect
                             if intersect(p0, p1, line[0], line[1]):
