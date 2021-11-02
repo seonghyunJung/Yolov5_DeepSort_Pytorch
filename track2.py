@@ -1,24 +1,22 @@
+from yolov5.models.experimental import attempt_load
+from yolov5.utils.downloads import attempt_download
+from yolov5.utils.datasets import LoadImages, LoadStreams
+from yolov5.utils.general import check_img_size, non_max_suppression, scale_coords, check_imshow, xyxy2xywh
+from yolov5.utils.torch_utils import select_device, time_sync
+from yolov5.utils.plots import Annotator, colors
+from deep_sort_pytorch.utils.parser import get_config
+from deep_sort_pytorch.deep_sort import DeepSort
+import argparse
+import os
+import platform
+import shutil
+import time
+from pathlib import Path
+import cv2
+import torch
+import torch.backends.cudnn as cudnn
 import sys
 sys.path.insert(0, './yolov5')
-
-import torch.backends.cudnn as cudnn
-import torch
-import cv2
-from pathlib import Path
-import time
-import shutil
-import platform
-import os
-import argparse
-from deep_sort_pytorch.deep_sort import DeepSort
-from deep_sort_pytorch.utils.parser import get_config
-from yolov5.utils.plots import Annotator, colors
-from yolov5.utils.torch_utils import select_device, time_sync
-from yolov5.utils.general import check_img_size, non_max_suppression, scale_coords, check_imshow, xyxy2xywh
-from yolov5.utils.datasets import LoadImages, LoadStreams
-from yolov5.utils.downloads import attempt_download
-from yolov5.models.experimental import attempt_load
-
 
 
 # Return true if line segments AB and CD intersect ###########################
@@ -216,9 +214,9 @@ def detect(opt):
                             # track line
                             cv2.line(im0, p0, p1, (255, 0, 255), 1)
 
-                            if((p0[1] > 200 and p0[1] < 300) and (p1[1] > 100 and p1[1] < 200)):
+                            if((p0[1] > 200 and p0[1] < 400) and (p1[1] > 100 and p1[1] < 200)):
                                 people_counter_in += 1
-                            elif((p1[1] > 200 and p1[1] < 300) and (p0[1] > 100 and p0[1] < 200)):
+                            elif((p1[1] > 200 and p1[1] < 400) and (p0[1] > 100 and p0[1] < 200)):
                                 people_counter_out += 1
 
                             """ # count if p0-p1 and line are intersect
