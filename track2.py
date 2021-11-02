@@ -1,24 +1,22 @@
+import torch.backends.cudnn as cudnn
+import torch
+import cv2
+from pathlib import Path
+import time
+import shutil
+import platform
+import os
+import argparse
+from deep_sort_pytorch.deep_sort import DeepSort
+from deep_sort_pytorch.utils.parser import get_config
+from yolov5.utils.plots import Annotator, colors
+from yolov5.utils.torch_utils import select_device, time_sync
+from yolov5.utils.general import check_img_size, non_max_suppression, scale_coords, check_imshow, xyxy2xywh
+from yolov5.utils.datasets import LoadImages, LoadStreams
+from yolov5.utils.downloads import attempt_download
+from yolov5.models.experimental import attempt_load
 import sys
 sys.path.insert(0, './yolov5')
-
-from yolov5.models.experimental import attempt_load
-from yolov5.utils.downloads import attempt_download
-from yolov5.utils.datasets import LoadImages, LoadStreams
-from yolov5.utils.general import check_img_size, non_max_suppression, scale_coords, check_imshow, xyxy2xywh
-from yolov5.utils.torch_utils import select_device, time_sync
-from yolov5.utils.plots import Annotator, colors
-from deep_sort_pytorch.utils.parser import get_config
-from deep_sort_pytorch.deep_sort import DeepSort
-import argparse
-import os
-import platform
-import shutil
-import time
-from pathlib import Path
-import cv2
-import torch
-import torch.backends.cudnn as cudnn
-
 
 
 # Return true if line segments AB and CD intersect ###########################
@@ -101,9 +99,9 @@ def detect(opt):
     txt_path = str(Path(out)) + '/' + txt_file_name + '.txt'
 
     # initialize line, counter, memory #######################################
-    line = [(0, 200), (1000, 200)]
-    upper_line = [(0, 100), (1000, 100)]
-    lower_line = [(0, 300), (1000, 300)]
+    line = [(0, 150), (1000, 150)]
+    upper_line = [(0, 50), (1000, 50)]
+    lower_line = [(0, 250), (1000, 250)]
     people_counter_in = 0
     people_counter_out = 0
     total_counter = 0
@@ -140,8 +138,8 @@ def detect(opt):
 
             # draw line ############################################################
             cv2.line(im0, line[0], line[1], (0, 0, 255), 2)
-            cv2.line(im0, line[0], line[1], (255, 0, 0), 2)
-            cv2.line(im0, line[0], line[1], (255, 0, 0), 2)
+            cv2.line(im0, upper_line[0], upper_line[1], (255, 0, 0), 2)
+            cv2.line(im0, lower_line[0], lower_line[1], (255, 0, 0), 2)
             ########################################################################
 
             if det is not None and len(det):
@@ -216,9 +214,9 @@ def detect(opt):
                             # track line
                             cv2.line(im0, p0, p1, (255, 0, 255), 1)
 
-                            if((p0[1] > 200 and p0[1] < 400) and (p1[1] > 100 and p1[1] < 200)):
+                            if((p0[1] > 150 and p0[1] < 250) and (p1[1] > 50 and p1[1] < 150)):
                                 people_counter_in += 1
-                            elif((p1[1] > 200 and p1[1] < 400) and (p0[1] > 100 and p0[1] < 200)):
+                            elif((p1[1] > 150 and p1[1] < 250) and (p0[1] > 50 and p0[1] < 150)):
                                 people_counter_out += 1
 
                             """ # count if p0-p1 and line are intersect
