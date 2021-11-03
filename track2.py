@@ -1,24 +1,29 @@
-import sys
-sys.path.insert(0, './yolov5')
-
-import torch.backends.cudnn as cudnn
-import torch
-import cv2
-from pathlib import Path
-import time
-import shutil
-import platform
-import os
-import argparse
-from deep_sort_pytorch.deep_sort import DeepSort
-from deep_sort_pytorch.utils.parser import get_config
-from yolov5.utils.plots import Annotator, colors
-from yolov5.utils.torch_utils import select_device, time_sync
-from yolov5.utils.general import check_img_size, non_max_suppression, scale_coords, check_imshow, xyxy2xywh
-from yolov5.utils.datasets import LoadImages, LoadStreams
-from yolov5.utils.downloads import attempt_download
+# limit the number of cpus used by high performance libraries
 from yolov5.models.experimental import attempt_load
+from yolov5.utils.downloads import attempt_download
+from yolov5.utils.datasets import LoadImages, LoadStreams
+from yolov5.utils.general import check_img_size, non_max_suppression, scale_coords, check_imshow, xyxy2xywh
+from yolov5.utils.torch_utils import select_device, time_sync
+from yolov5.utils.plots import Annotator, colors
+from deep_sort_pytorch.utils.parser import get_config
+from deep_sort_pytorch.deep_sort import DeepSort
+import argparse
+import platform
+import shutil
+import time
+from pathlib import Path
+import cv2
+import torch
+import torch.backends.cudnn as cudnn
+import sys
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
+sys.path.insert(0, './yolov5')
 
 
 # Return true if line segments AB and CD intersect ###########################
@@ -33,9 +38,9 @@ def ccw(A, B, C):
 
 
 def detect(opt):
-    out, source, yolo_weights, deep_sort_weights, show_vid, save_vid, save_txt, imgsz, evaluate = \
+    out, source, yolo_weights, deep_sort_weights, show_vid, save_vid, save_txt, imgsz, evaluate, half = \
         opt.output, opt.source, opt.yolo_weights, opt.deep_sort_weights, opt.show_vid, opt.save_vid, \
-        opt.save_txt, opt.img_size, opt.evaluate
+        opt.save_txt, opt.img_size, opt.evaluate, opt.half
     webcam = source == '0' or source.startswith(
         'rtsp') or source.startswith('http') or source.endswith('.txt')
 
@@ -52,6 +57,7 @@ def detect(opt):
 
     # Initialize
     device = select_device(opt.device)
+    half &= device.type != 'cpu'  # half precision only supported on CUDA
 
     # The MOT16 evaluation runs multiple inference streams in parallel, each one writing to
     # its own .txt file. Hence, in that case, the output folder is not restored
@@ -60,8 +66,6 @@ def detect(opt):
             pass
             shutil.rmtree(out)  # delete output folder
         os.makedirs(out)  # make new output folder
-
-    half = device.type != 'cpu'  # half precision only supported on CUDA
 
     # Load model
     model = attempt_load(yolo_weights, map_location=device)  # load FP32 model
@@ -295,7 +299,7 @@ def detect(opt):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--yolo_weights', nargs='+', type=str,
-                        default='yolov5/weights/yolov5s.pt', help='model.pt path(s)')
+                        default='yolov5/weights/yolov5l.pt', help='model.pt path(s)')
     parser.add_argument('--deep_sort_weights', type=str,
                         default='deep_sort_pytorch/deep_sort/deep/checkpoint/ckpt.t7', help='ckpt.t7 path')
     # file/folder, 0 for webcam
@@ -329,6 +333,8 @@ if __name__ == '__main__':
                         help='augmented inference')
     parser.add_argument("--config_deepsort", type=str,
                         default="deep_sort_pytorch/configs/deep_sort.yaml")
+    parser.add_argument("--half", action="store_true",
+                        help="use FP16 half-precision inference")
     args = parser.parse_args()
     args.img_size = check_img_size(args.img_size)
 
