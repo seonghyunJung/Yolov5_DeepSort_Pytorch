@@ -100,8 +100,8 @@ def detect(opt):
 
     # initialize line, counter, memory #######################################
     line = [(0, 200), (1000, 200)]
-    upper_line = [(0, 100), (1000, 100)]
-    lower_line = [(0, 300), (1000, 300)]
+    upper_line = [(0, 75), (1000, 75)]
+    lower_line = [(0, 325), (1000, 325)]
     people_counter_in = 0
     people_counter_out = 0
     total_counter = 0
