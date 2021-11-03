@@ -1,0 +1,11 @@
+1 object comes in,
+2 objects comes in,
+1 object goes out,
+2 objects goes out,
+3 objects comes in,
+1 object goes out,
+1 object goes out,
+1 object goes out, 1 object comes in,
+1 object comes in with fast walk,
+1 object comes in with running,
+1 object goes out with cap
