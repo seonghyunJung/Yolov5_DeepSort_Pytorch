@@ -1,4 +1,13 @@
 # limit the number of cpus used by high performance libraries
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
+sys.path.insert(0, './yolov5')
+
 from yolov5.models.experimental import attempt_load
 from yolov5.utils.downloads import attempt_download
 from yolov5.utils.datasets import LoadImages, LoadStreams
@@ -16,14 +25,7 @@ import cv2
 import torch
 import torch.backends.cudnn as cudnn
 import sys
-import os
-os.environ["OMP_NUM_THREADS"] = "1"
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-os.environ["MKL_NUM_THREADS"] = "1"
-os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
-os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
-sys.path.insert(0, './yolov5')
 
 
 # Return true if line segments AB and CD intersect ###########################
