@@ -188,7 +188,7 @@ def detect(opt):
                         cls = output[5]
 
                         c = int(cls)  # integer class
-                        label = f'{j} {names[c]} {conf:.2f}'
+                        label = f'{id} {names[c]} {conf:.2f}'
                         annotator.box_label(bboxes, label, color=colors(c, True))
 
                     # count in, out ###############################################                    
