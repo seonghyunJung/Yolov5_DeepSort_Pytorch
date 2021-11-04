@@ -109,8 +109,8 @@ def detect(opt):
 
     # initialize line, counter, memory #######################################
     line = [(0, 200), (1000, 200)]
-    upper_line = [(0, 75), (1000, 75)]
-    lower_line = [(0, 325), (1000, 325)]
+    upper_line = [(0, 50), (1000, 50)]
+    lower_line = [(0, 350), (1000, 350)]
     people_counter_in = 0
     people_counter_out = 0
     total_counter = 0
@@ -224,9 +224,9 @@ def detect(opt):
                             cv2.line(im0, p0, p1, (255, 0, 255), 1)
 
                             # Compare Current position and Previous position with Counting line
-                            if(p0[1] > line[0][1] and p1[1] < line[0][1]):
+                            if((p0[1] > line[0][1] and p0[1] < lower_line[0][1]) and (p1[1] > upper_line[0][1] and p1[1] < line[0][1])):
                                 people_counter_in += 1
-                            elif(p1[1] > line[0][1] and p0[1] < line[0][1]):
+                            elif((p1[1] > line[0][1] and p1[1] < lower_line[0][1])and (p0[1] > upper_line[0][1] and p0[1] < line[0][1])):
                                 people_counter_out += 1
                             #####################################################################
 
