@@ -1,3 +1,11 @@
+# limit the number of cpus used by high performance libraries
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 import sys
 sys.path.insert(0, './yolov5')
 
@@ -27,9 +35,9 @@ def ccw(A, B, C):
 ##############################################################################
 
 def detect(opt):
-    out, source, yolo_weights, deep_sort_weights, show_vid, save_vid, save_txt, imgsz, evaluate = \
+    out, source, yolo_weights, deep_sort_weights, show_vid, save_vid, save_txt, imgsz, evaluate, half = \
         opt.output, opt.source, opt.yolo_weights, opt.deep_sort_weights, opt.show_vid, opt.save_vid, \
-        opt.save_txt, opt.img_size, opt.evaluate
+        opt.save_txt, opt.img_size, opt.evaluate, opt.half
     webcam = source == '0' or source.startswith(
         'rtsp') or source.startswith('http') or source.endswith('.txt')
 
@@ -46,6 +54,7 @@ def detect(opt):
 
     # Initialize
     device = select_device(opt.device)
+    half &= device.type != 'cpu'  # half precision only supported on CUDA
 
     # The MOT16 evaluation runs multiple inference streams in parallel, each one writing to
     # its own .txt file. Hence, in that case, the output folder is not restored
@@ -54,8 +63,6 @@ def detect(opt):
             pass
             shutil.rmtree(out)  # delete output folder
         os.makedirs(out)  # make new output folder
-
-    half = device.type != 'cpu'  # half precision only supported on CUDA
 
 
     # Load model
@@ -306,6 +313,7 @@ if __name__ == '__main__':
                         help='augmented inference')
     parser.add_argument("--config_deepsort", type=str,
                         default="deep_sort_pytorch/configs/deep_sort.yaml")
+    parser.add_argument("--half", action="store_true", help="use FP16 half-precision inference")
     args = parser.parse_args()
     args.img_size = check_img_size(args.img_size)
 
