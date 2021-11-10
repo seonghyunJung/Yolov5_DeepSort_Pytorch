@@ -1,13 +1,13 @@
 # limit the number of cpus used by high performance libraries
+import sys
+sys.path.insert(0, './yolov5')
+
 import os
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
-
-import sys
-sys.path.insert(0, './yolov5')
 
 from yolov5.models.experimental import attempt_load
 from yolov5.utils.downloads import attempt_download
